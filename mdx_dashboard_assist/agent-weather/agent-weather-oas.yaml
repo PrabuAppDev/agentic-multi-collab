@@ -1,0 +1,92 @@
+openapi: 3.0.1
+info:
+  title: Agent-Weather API
+  description: Provides weather-specific actions tailored to a given context (vehicle, thermostat, plumbing, or travel).
+  version: 1.0.0
+paths:
+  /weather-actions:
+    post:
+      summary: Get weather-specific actions based on the input context
+      description: Generate prioritized actions tailored to the given weather condition, ZIP code, temperature, and context.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestText:
+                  type: string
+                  description: Describes the weather-related situation (e.g., "What to do for 25°F weather?").
+                  example: "What's the action for 25°F weather?"
+                zipCode:
+                  type: string
+                  description: A 5-digit ZIP code to refine actions for a specific location.
+                  example: "43065"
+                outdoorTemperature:
+                  type: number
+                  description: The specific current temperature (in Fahrenheit) at the location.
+                  example: 25
+                context:
+                  type: string
+                  description: The domain for which actions are to be generated.
+                  enum: [vehicle, thermostat, plumbing, travel]
+                  example: "plumbing"
+              required:
+                - requestText
+                - context
+      responses:
+        '200':
+          description: An array of prioritized actions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  actions:
+                    type: array
+                    description: An array of weather-specific actions.
+                    items:
+                      type: object
+                      properties:
+                        priority:
+                          type: string
+                          description: Priority level of the action.
+                          enum: [urgent, high, medium, low]
+                          example: "urgent"
+                        message:
+                          type: string
+                          description: A clear, actionable recommendation.
+                          example: "Close outdoor garden hose bib valve to prevent freeze and burst of water pipelines."
+        '400':
+          description: Invalid input (missing required fields or invalid context).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid input: context is missing or invalid."
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An unexpected error occurred."
+components:
+  schemas:
+    WeatherAction:
+      type: object
+      properties:
+        priority:
+          type: string
+          description: Priority level of the action.
+          enum: [urgent, high, medium, low]
+        message:
+          type: string
+          description: A clear, actionable recommendation.

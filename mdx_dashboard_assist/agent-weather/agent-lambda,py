@@ -1,0 +1,30 @@
+import json
+
+def lambda_handler(event, context):
+    agent = event['agent']
+    actionGroup = event['actionGroup']
+    apiPath = event['apiPath']
+    httpMethod =  event['httpMethod']
+    parameters = event.get('parameters', [])
+    requestBody = event.get('requestBody', {})
+
+    # Execute your business logic here. For more information, refer to: https://docs.aws.amazon.com/bedrock/latest/userguide/agents-lambda.html
+    responseBody =  {
+        "application/json": {
+            "body": "The API {} was called successfully!".format(apiPath)
+        }
+    }
+
+    action_response = {
+        'actionGroup': actionGroup,
+        'apiPath': apiPath,
+        'httpMethod': httpMethod,
+        'httpStatusCode': 200,
+        'responseBody': responseBody
+
+    }
+
+    dummy_api_response = {'response': action_response, 'messageVersion': event['messageVersion']}
+    print("Response: {}".format(dummy_api_response))
+
+    return dummy_api_response

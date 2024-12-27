@@ -1,0 +1,93 @@
+openapi: 3.0.1
+info:
+  title: Agent-2022-Acura-MDX-Owner-Manual API
+  description: Provides actionable recommendations based on text or image input, collaborating with other agents such as weather.
+  version: 1.0.0
+paths:
+  manual:
+    post:
+      summary: Get vehicle-specific recommendations based on text or image input
+      description: Generate prioritized recommendations tailored to the given input, collaborating with other agents when necessary.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recommendationContext:
+                  type: string
+                  description: The context for the recommendation (e.g., "vehicle operation", "home maintenance", "plumbing").
+                  example: "vehicle operation"
+                textInput:
+                  type: string
+                  description: Descriptive text input from the user about the query or issue (e.g., "What to do for tire pressure warning?").
+                  example: "What's the action for 25°F weather?"
+                imageInput:
+                  type: string
+                  format: binary
+                  description: Image input, such as a dashboard photo or indicator.
+                  example: "<Base64 Encoded Image Data>"
+                mode:
+                  type: string
+                  description: Specifies the operational mode of the agent.
+                  enum: [Initial-Analysis, Final-Action]
+                  example: "Initial-Analysis"
+              required: 
+                - recommendationContext 
+                - mode 
+      responses:
+        '200':
+          description: An array of prioritized recommendations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    description: An array of actionable recommendations.
+                    items:
+                      type: object
+                      properties:
+                        priority:
+                          type: string
+                          description: Priority level of the recommendation.
+                          enum: [urgent, high, medium, low]
+                          example: "urgent"
+                        message:
+                          type: string
+                          description: A clear, actionable recommendation.
+                          example: "Close outdoor garden hose bib valve to prevent freeze and burst of water pipelines."
+        '400':
+          description: Invalid input (missing required fields or invalid input type).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid input: mode is required."
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An unexpected error occurred."
+components:
+  schemas:
+    Recommendation:
+      type: object
+      properties:
+        priority:
+          type: string
+          description: Priority level of the recommendation.
+          enum: [urgent, high, medium, low]
+        message:
+          type: string
+          description: A clear, actionable recommendation.
